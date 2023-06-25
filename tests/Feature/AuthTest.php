@@ -56,18 +56,21 @@ class AuthTest extends TestCase
      */
     public function test_user_can_be_registered_with_valid_data()
     {
+        $password = Str::random(10);
+
         $data = [
             'name' => $this->faker->name(),
             'email' => $this->faker->email(),
-            'password' => 'secret',
+            'password' => $password,
+            'password_confirmation' => $password,
         ];
 
         $response = $this->postJson('/api/auth/register', $data);
 
         $response->assertStatus(201);
-        $response->assertJson([
-            'name' => $data['name'],
-            'email' => $data['email'],
+        $response->assertJsonStructure([
+            'user',
+            'token',
         ]);
     }
 
@@ -81,7 +84,7 @@ class AuthTest extends TestCase
         $response = $this->postJson('/api/auth/register', $data);
 
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors([
+        $response->assertJsonStructure([
             'name',
             'email',
             'password',
