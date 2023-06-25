@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Str;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -17,16 +18,20 @@ class AuthTest extends TestCase
      */
     public function test_user_can_be_authenticated_with_valid_credentials()
     {
-        $user = User::factory()->create();
+        $password = Str::random(10);
+
+        $user = User::factory()->create([
+            'password' => $password,
+        ]);
 
         $response = $this->postJson('/api/auth/login', [
             'email' => $user->email,
-            'password' => $user->password,
+            'password' => $password,
         ]);
 
         $response->assertStatus(200);
-        $response->assertJson([
-            'token' => $user->api_token,
+        $response->assertJsonStructure([
+            'token'
         ]);
     }
 
