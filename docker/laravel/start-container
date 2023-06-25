@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+php artisan clear-compiled
+
+php artisan migrate
+#php artisan storage:link --force
+
+set -e
+
+#if [ "$APP_ENV" != "production" ]; then
+#  php artisan scribe:generate
+#fi
+
+if [ "$APP_ENV" == "production" ]; then
+  php artisna optimize
+  php artisan config:cache
+fi
+
+rm -R -f /var/www/html/public/assets
+
+rm -f *.log*
+
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
+exec "$@"
