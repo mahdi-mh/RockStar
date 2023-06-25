@@ -19,19 +19,9 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
-        $products = collect([
-            'Latte',
-            'Cappuccino',
-            'Espresso',
-            'Tea',
-            'Hot chocolate',
-            'Cookie'
-        ]);
-
         return [
-            'name' => $products->random()->first(),
             'description' => fake()->sentence,
-            'price' => fake()->randomFloat(),
+            'price' => fake()->randomFloat(2, 1, 10),
         ];
     }
 }
