@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Product\Database\Seeders;
 
-use App\Models\Product;
 use Illuminate\Database\Seeder;
+use Modules\Product\Models\Product;
 
 class ProductSeeder extends Seeder
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Feature;
+namespace Modules\Product\Tests\Feature;
 
-use App\Models\Product;
-use Database\Seeders\ProductSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Product\Database\Seeders\ProductSeeder;
+use Modules\Product\Models\Product;
 use Schema;
 use Tests\TestCase;
 
@@ -17,7 +17,7 @@ class ProductModelTest extends TestCase
         $this->assertTrue(Schema::hasTable('products'));
     }
 
-    public function test_seeder_creates_10_products(): void
+    public function test_seeder_creates_products(): void
     {
         $this->seed([
             ProductSeeder::class,
