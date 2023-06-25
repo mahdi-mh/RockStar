@@ -18,6 +18,7 @@ COPY ./ .
 RUN composer dump-autoload
 
 RUN chown -R www-data:www-data /var/www
+RUN chown -R www-data:www-data /run /tmp/
 
 VOLUME /var/www/html
 USER www-data
