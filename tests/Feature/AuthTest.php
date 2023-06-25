@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Str;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -16,7 +17,7 @@ class AuthTest extends TestCase
     /**
      * Test that a user can be authenticated with valid credentials.
      */
-    public function test_user_can_be_authenticated_with_valid_credentials()
+    public function test_user_can_be_authenticated_with_valid_credentials(): void
     {
         $password = Str::random(10);
 
@@ -29,7 +30,7 @@ class AuthTest extends TestCase
             'password' => $password,
         ]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonStructure([
             'token'
         ]);
@@ -38,14 +39,14 @@ class AuthTest extends TestCase
     /**
      * Test that a user cannot be authenticated with invalid credentials.
      */
-    public function test_user_cannot_be_authenticated_with_invalid_credentials()
+    public function test_user_cannot_be_authenticated_with_invalid_credentials(): void
     {
         $response = $this->postJson('/api/auth/login', [
             'email' => 'invalid@email.com',
             'password' => 'invalid_password',
         ]);
 
-        $response->assertStatus(401);
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
         $response->assertJson([
             'message' => 'Invalid credentials.',
         ]);
@@ -54,7 +55,7 @@ class AuthTest extends TestCase
     /**
      * Test that a user can be registered with valid data.
      */
-    public function test_user_can_be_registered_with_valid_data()
+    public function test_user_can_be_registered_with_valid_data(): void
     {
         $password = Str::random(10);
 
@@ -67,7 +68,7 @@ class AuthTest extends TestCase
 
         $response = $this->postJson('/api/auth/register', $data);
 
-        $response->assertStatus(201);
+        $response->assertStatus(Response::HTTP_CREATED);
         $response->assertJsonStructure([
             'user',
             'token',
@@ -77,13 +78,13 @@ class AuthTest extends TestCase
     /**
      * Test that a user cannot be registered with invalid data.
      */
-    public function test_user_cannot_be_registered_with_invalid_data()
+    public function test_user_cannot_be_registered_with_invalid_data(): void
     {
         $data = [];
 
         $response = $this->postJson('/api/auth/register', $data);
 
-        $response->assertStatus(422);
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonStructure([
             'name',
             'email',

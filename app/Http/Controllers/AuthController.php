@@ -6,6 +6,7 @@ use App\Models\User;
 use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Validator;
 
 class AuthController extends Controller
@@ -17,7 +18,7 @@ class AuthController extends Controller
         if (!Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Invalid credentials.',
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         $user = Auth::user();
@@ -37,7 +38,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $data = $validator->getData();
@@ -50,6 +51,6 @@ class AuthController extends Controller
         return response()->json([
             'user' => $user->toArray(),
             'token' => $token,
-        ], 201);
+        ], Response::HTTP_CREATED);
     }
 }
