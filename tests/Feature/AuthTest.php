@@ -50,4 +50,41 @@ class AuthTest extends TestCase
             'message' => 'Invalid credentials.',
         ]);
     }
+
+    /**
+     * Test that a user can be registered with valid data.
+     */
+    public function test_user_can_be_registered_with_valid_data()
+    {
+        $data = [
+            'name' => $this->faker->name(),
+            'email' => $this->faker->email(),
+            'password' => 'secret',
+        ];
+
+        $response = $this->postJson('/api/auth/register', $data);
+
+        $response->assertStatus(201);
+        $response->assertJson([
+            'name' => $data['name'],
+            'email' => $data['email'],
+        ]);
+    }
+
+    /**
+     * Test that a user cannot be registered with invalid data.
+     */
+    public function test_user_cannot_be_registered_with_invalid_data()
+    {
+        $data = [];
+
+        $response = $this->postJson('/api/auth/register', $data);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors([
+            'name',
+            'email',
+            'password',
+        ]);
+    }
 }
