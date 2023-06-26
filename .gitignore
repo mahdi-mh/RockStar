@@ -17,3 +17,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# scribe
+/.scribe
+/public/vendor
+/resources/views/scribe
