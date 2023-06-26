@@ -13,4 +13,4 @@ use Modules\Product\Http\Controllers\ProductController;
 |
 */
 
-Route::get('products', [ProductController::class, 'index']);
+Route::get('list', [ProductController::class, 'index']);

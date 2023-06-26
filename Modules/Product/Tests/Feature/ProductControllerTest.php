@@ -16,7 +16,7 @@ class ProductControllerTest extends TestCase
      */
     public function test_unauthenticated_can_not_access_products_list(): void
     {
-        $response = $this->getJson('/api/products');
+        $response = $this->getJson('/api/product/list');
         $response->assertUnauthorized();
     }
 
@@ -34,7 +34,7 @@ class ProductControllerTest extends TestCase
         $this->actingAs($user);
         $this->assertAuthenticated();
 
-        $response = $this->getJson('/api/products');
+        $response = $this->getJson('/api/product/list');
 
         $response->assertOk();
         $response->assertJsonStructure([
