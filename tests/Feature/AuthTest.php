@@ -37,6 +37,21 @@ class AuthTest extends TestCase
     }
 
     /**
+     * Test that a user cannot be authenticated with invalid data.
+     */
+    public function test_invalid_data_for_login(): void
+    {
+        $response = $this->postJson('/api/auth/login', []);
+
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        $response->assertJsonStructure([
+            'email',
+            'password',
+        ]);
+    }
+
+    /**
      * Test that a user cannot be authenticated with invalid credentials.
      */
     public function test_user_cannot_be_authenticated_with_invalid_credentials(): void
