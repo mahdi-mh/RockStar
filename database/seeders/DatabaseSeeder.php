@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\Product\Database\Seeders\ProductDetailSeeder;
 use Modules\Product\Database\Seeders\ProductSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             ProductSeeder::class,
+            ProductDetailSeeder::class,
         ]);
     }
 }
