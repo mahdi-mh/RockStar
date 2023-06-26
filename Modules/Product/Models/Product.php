@@ -13,6 +13,7 @@ class Product extends Model
     protected $guarded = [];
 
     protected $visible = [
+        'id',
         'name',
         'description',
         'price',
