@@ -29,6 +29,6 @@ class ProductController extends Controller
             'page' => 'integer',
         ]);
 
-        return Product::paginate($request->get('per_page', 10));
+        return Product::with('details')->paginate($request->get('per_page', 10));
     }
 }

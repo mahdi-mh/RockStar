@@ -4,6 +4,9 @@ namespace Modules\Product\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Product\Database\Seeders\ProductDetailSeeder;
+use Modules\Product\Database\Seeders\ProductSeeder;
+use Modules\Product\Database\Seeders\ProductSyncWithDetailSeeder;
+use Modules\Product\Models\Product;
 use Modules\Product\Models\ProductDetail;
 use Schema;
 use Tests\TestCase;
@@ -32,5 +35,19 @@ class ProductDetailModelTest extends TestCase
         $productsDetails = ProductDetail::all();
 
         $this->assertCount(4, $productsDetails);
+    }
+
+    public function test_product_detail_has_product()
+    {
+        $this->seed([
+            ProductSeeder::class,
+            ProductDetailSeeder::class,
+            ProductSyncWithDetailSeeder::class,
+        ]);
+
+        $detail = ProductDetail::first();
+
+        $this->assertNotNull($detail->product);
+        $this->assertInstanceOf(Product::class, $detail->product->first());
     }
 }
