@@ -5,9 +5,6 @@ namespace Modules\Product\Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Product\Database\Seeders\ProductSeeder;
-use Modules\Product\Models\Product;
-use Schema;
-use Symfony\Component\Routing\Annotation\Route;
 use Tests\TestCase;
 
 class ProductControllerTest extends TestCase

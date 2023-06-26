@@ -12,11 +12,17 @@ class ProductModelTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * @return void
+     */
     public function test_products_table_is_created(): void
     {
         $this->assertTrue(Schema::hasTable('products'));
     }
 
+    /**
+     * @return void
+     */
     public function test_seeder_creates_products(): void
     {
         $this->seed([
