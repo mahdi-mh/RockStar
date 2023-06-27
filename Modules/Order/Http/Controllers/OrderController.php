@@ -2,19 +2,31 @@
 
 namespace Modules\Order\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Order\Resources\OrderCollectionResource;
+use Validator;
 
 class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
-     * @return Renderable
+     *
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('order::index');
+        Validator::validate($request->all(), [
+            'per_page' => 'integer',
+            'page' => 'integer',
+        ]);
+
+        /** @var User|Model $user */
+        $user = $request->user();
+
+        return new OrderCollectionResource($user->order()->paginate($request->get('per_page', 10)));
     }
 
     /**
