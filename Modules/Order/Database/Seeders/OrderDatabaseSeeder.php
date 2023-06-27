@@ -2,8 +2,10 @@
 
 namespace Modules\Order\Database\Seeders;
 
+use App\Models\User;
+use Exception;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Model;
+use Modules\Order\Models\Order;
 
 class OrderDatabaseSeeder extends Seeder
 {
@@ -11,11 +13,16 @@ class OrderDatabaseSeeder extends Seeder
      * Run the database seeds.
      *
      * @return void
+     * @throws Exception
      */
-    public function run()
+    public function run(): void
     {
-        Model::unguard();
+        User::factory(10)
+            ->has(Order::factory()->count(random_int(1,5)))
+            ->create();
 
-        // $this->call("OthersTableSeeder");
+        $this->call([
+            OrderSyncWithProductSeeder::class,
+        ]);
     }
 }
