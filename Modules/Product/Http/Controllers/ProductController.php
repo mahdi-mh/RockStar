@@ -38,6 +38,6 @@ class ProductController extends Controller
         ]);
 
         return $this->productRepository
-            ->withDetails()->paginate(($request->get('per_page', 10)));
+            ->withDetails()->paginate($request->get('per_page', 10));
     }
 }
