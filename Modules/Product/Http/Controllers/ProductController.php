@@ -4,11 +4,19 @@ namespace Modules\Product\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Product\Models\Product;
+use Modules\Product\Repositories\ProductRepositoryInterface;
 use Validator;
 
 class ProductController extends Controller
 {
+    // Set repository
+    private ProductRepositoryInterface $productRepository;
+
+    public function __construct(ProductRepositoryInterface $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
+
     /**
      * List
      *
@@ -29,6 +37,7 @@ class ProductController extends Controller
             'page' => 'integer',
         ]);
 
-        return Product::with('details')->paginate($request->get('per_page', 10));
+        return $this->productRepository
+            ->withDetails()->paginate(($request->get('per_page', 10)));
     }
 }

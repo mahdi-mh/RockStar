@@ -3,6 +3,8 @@
 namespace Modules\Product\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\Product\Repositories\ProductRepository;
+use Modules\Product\Repositories\ProductRepositoryInterface;
 
 class ProductServiceProvider extends ServiceProvider
 {
@@ -33,6 +35,10 @@ class ProductServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Register the routes
         $this->app->register(RouteServiceProvider::class);
+
+        // Bind repository
+        $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
     }
 }
