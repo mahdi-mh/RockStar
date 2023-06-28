@@ -18,6 +18,14 @@ class Order extends Model
 
     protected $with = ['products'];
 
+    protected $visible = [
+        'id',
+        'status',
+        'consume_location',
+        'address',
+        'price',
+    ];
+
     /**
      * The factory instance for the model.
      *

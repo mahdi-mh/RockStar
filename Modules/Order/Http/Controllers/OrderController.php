@@ -7,7 +7,11 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Validation\Rules\Enum;
+use Modules\Order\Enums\OrderConsumeLocation;
+use Modules\Order\Models\Order;
 use Modules\Order\Resources\OrderCollectionResource;
+use Throwable;
 use Validator;
 
 class OrderController extends Controller
@@ -30,22 +34,24 @@ class OrderController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
-    {
-        return view('order::create');
-    }
-
-    /**
      * Store a newly created resource in storage.
      * @param Request $request
-     * @return Renderable
+     * @return
+     * @throws Throwable
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = Validator::validate($request->all(), [
+            'consume_location' => ['required', 'string', new Enum(OrderConsumeLocation::class)],
+            'address' => ['required_if:consume_location,' . OrderConsumeLocation::TAKE_AWAY->value, 'string', 'min:3', 'max:255']
+        ]);
+
+        $order = new Order($validatedData);
+
+        $request->user()
+            ->order()->save($order);
+
+        return $order;
     }
 
     /**

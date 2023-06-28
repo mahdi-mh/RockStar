@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Modules\Order\Http\Controllers\OrderController;
+use Modules\Order\Http\Middleware\CheckUserHaveNotActiveOrder;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,3 +16,5 @@ use Modules\Order\Http\Controllers\OrderController;
 */
 
 Route::get('list', [OrderController::class, 'index']);
+Route::middleware(CheckUserHaveNotActiveOrder::class)
+    ->post('store', [OrderController::class, 'store']);
