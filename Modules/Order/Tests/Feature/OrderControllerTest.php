@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Order\Database\Seeders\OrderDatabaseSeeder;
 use Modules\Order\Enums\OrderConsumeLocation;
+use Modules\Order\Enums\OrderStatus;
 use Modules\Product\Database\Seeders\ProductSeeder;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -174,5 +175,51 @@ class OrderControllerTest extends TestCase
             'consume_location',
             'address',
         ]);
+    }
+
+    public function test_order_add_product_unauthenticated(): void
+    {
+        $response = $this->postJson('/api/order/1/add-product');
+        $response->assertUnauthorized();
+    }
+
+    public function test_order_add_product_order_not_found(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->postJson('/api/order/1/add-product');
+        $response->assertNotFound();
+    }
+
+    public function test_order_add_product_user_not_allowed(): void
+    {
+        $this->seed([
+            OrderDatabaseSeeder::class
+        ]);
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->postJson('/api/order/1/add-product');
+        $response->assertForbidden();
+        $response->assertJson(["message" => "You are not allowed to do this action"]);
+    }
+
+    public function test_order_add_product_order_status_not_allowed(): void
+    {
+        $this->seed([
+            OrderDatabaseSeeder::class
+        ]);
+
+        $user = User::firstOrFail();
+        $this->actingAs($user);
+
+        $order = $user->order()->first();
+        $order->update(['status' => OrderStatus::DELIVERED->value]);
+
+        $response = $this->postJson("/api/order/{$order->id}/add-product");
+        $response->assertNotAcceptable();
+        $response->assertJson(["message" => 'This order status not allow for this action']);
     }
 }

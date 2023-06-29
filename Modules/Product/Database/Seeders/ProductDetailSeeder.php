@@ -22,7 +22,7 @@ class ProductDetailSeeder extends Seeder
         foreach ($products as $name => $options) {
             ProductDetail::create([
                 'name' => $name,
-                'options' => (object) $options,
+                'options' => $options,
             ]);
         }
     }

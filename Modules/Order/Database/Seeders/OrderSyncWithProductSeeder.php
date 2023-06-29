@@ -29,7 +29,7 @@ class OrderSyncWithProductSeeder extends Seeder
                     $details[] = [
                         'id' => $detail->id,
                         'name' => $detail->name,
-                        'value' => collect($detail->options)->random(),
+                        'value' => $detail->options->random(),
                     ];
                 }
 

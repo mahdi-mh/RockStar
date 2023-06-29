@@ -2,8 +2,12 @@
 
 namespace Modules\Order\Providers;
 
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Modules\Order\Http\Middleware\CheckOrderCreatedByAuthUser;
+use Modules\Order\Http\Middleware\CheckOrderStatus;
+use Modules\Order\Http\Middleware\CheckUserHaveNotActiveOrder;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -17,6 +21,12 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        // Booting middlewares
+        $router = app(Router::class);
+        $router->aliasMiddleware('checkOrderCreatedByAuthUser', CheckOrderCreatedByAuthUser::class);
+        $router->aliasMiddleware('checkOrderStatus', CheckOrderStatus::class);
+        $router->aliasMiddleware('checkUserHaveNotActiveOrder', CheckUserHaveNotActiveOrder::class);
     }
 
     /**

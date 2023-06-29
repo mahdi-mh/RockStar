@@ -11,7 +11,7 @@ class ProductDetail extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'options' => 'object',
+        'options' => 'collection',
     ];
 
     protected $visible = [
