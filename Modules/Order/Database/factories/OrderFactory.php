@@ -29,7 +29,7 @@ class OrderFactory extends Factory
             'consume_location' => $this->faker
                 ->randomElement(collect(OrderConsumeLocation::cases())->pluck('value')->toArray()),
             'address' => $this->faker->address,
-            'price' => $this->faker->randomFloat(2, 10, 100),
+            'total_price' => $this->faker->randomFloat(2, 10, 100),
         ];
     }
 }

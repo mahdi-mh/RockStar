@@ -15,7 +15,7 @@ class OrderJsonResource extends JsonResource
             'status' => $this->status,
             'consume_location' => $this->consume_location,
             'address' => $this->address,
-            'price' => $this->price,
+            'total_price' => $this->total_price,
             'products' => $this->products->map(function (Product|Model $product) {
                 return [
                     'id' => $product->id,

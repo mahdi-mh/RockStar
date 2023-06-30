@@ -51,7 +51,7 @@ class OrderControllerTest extends TestCase
                     'status',
                     'consume_location',
                     'address',
-                    'price',
+                    'total_price',
                     'products' => [
                         '*' => [
                             'id',

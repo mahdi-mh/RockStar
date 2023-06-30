@@ -3,7 +3,6 @@
 namespace Modules\Order\Http\Controllers;
 
 use App\Models\User;
-use http\Encoding\Stream\Debrotli;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +24,7 @@ class OrderController extends Controller
      * Display a listing of the resource.
      *
      */
-    public function index(Request $request)
+    public function index(Request $request): OrderCollectionResource
     {
         Validator::validate($request->all(), [
             'per_page' => 'integer',
@@ -41,10 +40,9 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      * @param Request $request
-     * @return
-     * @throws Throwable
+     * @return Order
      */
-    public function store(Request $request)
+    public function store(Request $request): Order
     {
         $validatedData = Validator::validate($request->all(), [
             'consume_location' => ['required', 'string', new Enum(OrderConsumeLocation::class)],
@@ -67,26 +65,28 @@ class OrderController extends Controller
      * @return JsonResponse
      * @throws Throwable
      */
-    public function addProduct(Request $request, Order $order)
+    public function addProduct(Request $request, Order $order): JsonResponse
     {
         $validatedData = Validator::validate($request->all(), [
-            'product_id' => ['required', 'integer', Rule::exists('products')],
+            'product_id' => ['required', 'integer', Rule::exists('products', 'id')],
             'details' => ['json'],
         ]);
 
-        /** @var Product|Model $product */
         $product = Product::findOrFail($validatedData['product_id']);
 
         $productDetails = $this->detailsValidation($product, $validatedData['details'] ?? null);
 
         $order->products()
-            ->attach($validatedData['product_id'], [
+            ->attach($product->id, [
                 'details' => $productDetails ?? null,
             ]);
+
+        $order->calculateTotalPrice();
 
         return response()->json([
             'message' => 'Product added to order successfully',
             'order' => $order->refresh(),
+            'products' => $order->products ?? null,
         ]);
     }
 
@@ -161,14 +161,13 @@ class OrderController extends Controller
      */
     private function prepareProductDetailToJson(mixed $productDetails, $givenDetails): string
     {
-        $productDetails->keyBy('id');
         $details = [];
 
         foreach ($givenDetails as $detail) {
             if ($productDetails->contains('id', $detail->id)) {
-                $productDetail = $productDetails[$detail->id];
+                $productDetail = $productDetails->where('id', $detail->id)->first();
 
-                if (!$productDetail->options->has($detail->value)) {
+                if (!in_array($detail->value, $productDetail->options->toArray(), true)) {
                     continue;
                 }
 

@@ -29,7 +29,7 @@ return new class extends Migration
 
             $table->string('address')->nullable()->default(null);
 
-            $table->float('price')->default(0.0);
+            $table->float('total_price')->default(0.0);
 
             $table->timestamps();
         });

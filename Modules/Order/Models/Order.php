@@ -23,7 +23,7 @@ class Order extends Model
         'status',
         'consume_location',
         'address',
-        'price',
+        'total_price',
     ];
 
     /**
@@ -55,5 +55,16 @@ class Order extends Model
     {
         return $this->belongsToMany(Product::class)
             ->withPivot(['details']);
+    }
+
+    /**
+     * Scope to calculate total price
+     *
+     * @return bool
+     */
+    public function scopeCalculateTotalPrice(): bool
+    {
+        $total = (float) $this->products()->sum('price');
+        return $this->update(['total_price' => $total ?? 0.0]);
     }
 }
