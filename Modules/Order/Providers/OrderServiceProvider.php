@@ -3,6 +3,8 @@
 namespace Modules\Order\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\Order\Repositories\OrderRepository;
+use Modules\Order\Repositories\OrderRepositoryInterface;
 
 class OrderServiceProvider extends ServiceProvider
 {
@@ -34,6 +36,9 @@ class OrderServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->register(RouteServiceProvider::class);
-        $this->app->register(OrderRelationServiceProvider::class,);
+        $this->app->register(OrderRelationServiceProvider::class);
+
+        // Bind repository
+        $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
     }
 }

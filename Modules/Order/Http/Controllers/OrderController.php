@@ -13,6 +13,7 @@ use JsonException;
 use Modules\Order\Enums\OrderConsumeLocation;
 use Modules\Order\Enums\OrderStatus;
 use Modules\Order\Models\Order;
+use Modules\Order\Repositories\OrderRepositoryInterface;
 use Modules\Order\Resources\OrderCollectionResource;
 use Modules\Order\Resources\OrderJsonResource;
 use Modules\Product\Models\Product;
@@ -21,6 +22,13 @@ use Validator;
 
 class OrderController extends Controller
 {
+    // Set repository
+    private OrderRepositoryInterface $orderRepository;
+
+    public function __construct(OrderRepositoryInterface $orderRepository)
+    {
+        $this->orderRepository = $orderRepository;
+    }
 
     /**
      * List
@@ -45,10 +53,11 @@ class OrderController extends Controller
             'page' => 'integer',
         ]);
 
-        /** @var User|Model $user */
-        $user = $request->user();
-
-        return new OrderCollectionResource($user->order()->paginate($request->get('per_page', 10)));
+        return new OrderCollectionResource(
+            $this->orderRepository
+                ->buildFromUser($request->user())
+                ->paginate($request->get('per_page', 10))
+        );
     }
 
     /**
@@ -76,12 +85,11 @@ class OrderController extends Controller
             'address' => ['required_if:consume_location,' . OrderConsumeLocation::TAKE_AWAY->value, 'string', 'min:3', 'max:255']
         ]);
 
-        $order = new Order($validatedData);
-
-        $request->user()
-            ->order()->save($order);
-
-        return new OrderJsonResource($order);
+        return new OrderJsonResource(
+            $this->orderRepository
+                ->buildFromUser($request->user())
+                ->store($validatedData)
+        );
     }
 
     /**
@@ -116,12 +124,9 @@ class OrderController extends Controller
 
         $productDetails = $this->detailsValidation($product, $validatedData['details'] ?? null);
 
-        $order->products()
-            ->attach($product->id, [
-                'details' => $productDetails ?? null,
-            ]);
-
-        $order->calculateTotalPrice();
+        $this->orderRepository
+            ->setOrder($order)
+            ->addProduct($product, $productDetails);
 
         return response()->json([
             'message' => 'Product added to order successfully.',
@@ -154,8 +159,9 @@ class OrderController extends Controller
             'product_id' => ['required', 'integer', Rule::exists('products', 'id')],
         ]);
 
-        $order->products()
-            ->detach($validatedData['product_id']);
+        $this->orderRepository
+            ->setOrder($order)
+            ->deleteProduct($validatedData['product_id']);
 
         return response()->json([
             'message' => 'Product successfully deleted from this order.',
@@ -180,9 +186,7 @@ class OrderController extends Controller
      */
     public function prepareOrder(Order $order)
     {
-        $order->updateOrFail([
-            'status' => OrderStatus::PREPARATION->value,
-        ]);
+        $this->orderRepository->setOrder($order)->prepare();
 
         return response()->json([
             'message' => 'Product successfully submitted , please wait for preparing.',
