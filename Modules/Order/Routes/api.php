@@ -26,3 +26,8 @@ Route::middleware([
     "checkOrderCreatedByAuthUser",
     "checkOrderStatus:" . OrderStatus::ORDERING->value,
 ])->post('{order}/add-product', [OrderController::class, 'addProduct']);
+
+Route::middleware([
+    "checkOrderCreatedByAuthUser",
+    "checkOrderStatus:" . OrderStatus::ORDERING->value,
+])->put('{order}/delete-product', [OrderController::class, 'deleteProduct']);

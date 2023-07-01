@@ -1,0 +1,24 @@
+{
+    "message": "Product added to order successfully.",
+    "data": {
+        "id": 11,
+        "status": "ordering",
+        "consume_location": "in_shop",
+        "address": null,
+        "total_price": 5.64,
+        "products": [
+            {
+                "id": 1,
+                "name": "Latte",
+                "price": 5.64,
+                "details": [
+                    {
+                        "id ": 1,
+                        "name": "milk",
+                        "value": "skim"
+                    }
+                ]
+            }
+        ]
+    }
+}

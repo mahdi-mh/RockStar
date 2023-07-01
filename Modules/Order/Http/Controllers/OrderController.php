@@ -21,9 +21,22 @@ use Validator;
 
 class OrderController extends Controller
 {
+
     /**
+     * List
+     *
      * Display a listing of the resource.
      *
+     * @param Request $request
+     * @return OrderCollectionResource
+     *
+     * @group Order
+     *
+     * @urlParam per_page int The number of products per page.
+     * @urlParam page int The page number.
+     *
+     * @responseFile status=200 scenario="Success" Modules/Order/Storage/example-response/list-200.json
+     * @responseFile status=401 scenario="Unauthenticated" storage/example-response/auth/unauth-401.json
      */
     public function index(Request $request): OrderCollectionResource
     {
@@ -39,9 +52,22 @@ class OrderController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store
+     *
+     * Store an order.
+     *
      * @param Request $request
      * @return OrderJsonResource
+     *
+     * @group Order
+     *
+     * @bodyParam consume_location string required Consume of location in [in_shop, take_away] Example: in_shop
+     * @bodyParam address string Delivered address in required_if `consume_location` is `take_away`
+     *
+     * @responseFile status=201 scenario="Successfully created" Modules/Order/Storage/example-response/store-201.json
+     * @responseFile status=406 scenario="Successfully created" Modules/Order/Storage/example-response/store-201.json
+     * @responseFile status=401 scenario="When this user already have active order" Modules/Order/Storage/example-response/store-406.json
+     * @responseFile status=401 scenario="Unauthenticated" storage/example-response/auth/unauth-401.json
      */
     public function store(Request $request): OrderJsonResource
     {
@@ -59,18 +85,31 @@ class OrderController extends Controller
     }
 
     /**
+     * Add product
+     *
      * Add a product to order.
      *
      * @param Request $request
      * @param Order $order
      * @return JsonResponse
      * @throws Throwable
+     *
+     * @group Order
+     *
+     * @bodyParam product_id integer required Product id that want to add to this order.
+     * @bodyParam details string Details of product in json format Example: [{"id":1,"value":"skim"}]
+     *
+     * @responseFile status=200 scenario="Successfully fetched" Modules/Order/Storage/example-response/add-product-200.json
+     * @responseFile status=422 scenario="Invalid data" Modules/Order/Storage/example-response/add-product-422.json
+     * @responseFile status=403 scenario="Permission denied" Modules/Order/Storage/example-response/add-product-403.json
+     * @responseFile status=406 scenario="When order status is not ordering" Modules/Order/Storage/example-response/add-product-406.json
+     * @responseFile status=401 scenario="Unauthenticated" storage/example-response/auth/unauth-401.json
      */
     public function addProduct(Request $request, Order $order): JsonResponse
     {
         $validatedData = Validator::validate($request->all(), [
             'product_id' => ['required', 'integer', Rule::exists('products', 'id')],
-            'details' => ['json'],
+            'details' => ['string', 'json'],
         ]);
 
         $product = Product::findOrFail($validatedData['product_id']);
@@ -86,10 +125,29 @@ class OrderController extends Controller
 
         return response()->json([
             'message' => 'Product added to order successfully.',
-            'data' => new OrderJsonResource($order),
+            'data' => new OrderJsonResource($order->refresh()),
         ]);
     }
 
+    /**
+     * Add product
+     *
+     * Add a product to order.
+     *
+     * @param Request $request
+     * @param Order $order
+     * @return JsonResponse
+     *
+     * @group Order
+     *
+     * @bodyParam product_id integer required Product id that want to add to this order.
+     *
+     * @responseFile status=200 scenario="Successfully deleted" Modules/Order/Storage/example-response/delete-product-200.json
+     * @responseFile status=422 scenario="Invalid data" Modules/Order/Storage/example-response/add-product-422.json
+     * @responseFile status=403 scenario="Permission denied" Modules/Order/Storage/example-response/add-product-403.json
+     * @responseFile status=406 scenario="When order status is not ordering" Modules/Order/Storage/example-response/add-product-406.json
+     * @responseFile status=401 scenario="Unauthenticated" storage/example-response/auth/unauth-401.json
+     */
     public function deleteProduct(Request $request, Order $order)
     {
         $validatedData = Validator::validate($request->all(), [

@@ -23,12 +23,13 @@ class ProductController extends Controller
      * List all products as paginated
      *
      * @return mixed
+     *
      * @group Product
      *
      * @urlParam per_page int The number of products per page.
      * @urlParam page int The page number.
      * @responseFile status=200 scenario="Success" Modules/Product/Storage/example-response/list-200.json
-     * @responseFile status=401 scenario="Unauthenticated" Modules/Product/Storage/example-response/list-401.json
+     * @responseFile status=401 scenario="Unauthenticated" storage/example-response/auth/unauth-401.json
      */
     public function index(Request $request)
     {
