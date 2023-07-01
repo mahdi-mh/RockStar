@@ -2,7 +2,10 @@
 
 namespace Modules\Order\Providers;
 
+use App;
 use Illuminate\Support\ServiceProvider;
+use Modules\Order\Models\Order;
+use Modules\Order\Observers\OrderModelObserver;
 use Modules\Order\Repositories\OrderRepository;
 use Modules\Order\Repositories\OrderRepositoryInterface;
 
@@ -25,7 +28,13 @@ class OrderServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Load migrations
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
+
+        // Register observer
+        if (!App::environment('testing')) {
+            Order::observe(OrderModelObserver::class);
+        }
     }
 
     /**
@@ -35,7 +44,10 @@ class OrderServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Register routes
         $this->app->register(RouteServiceProvider::class);
+
+        // Register relation
         $this->app->register(OrderRelationServiceProvider::class);
 
         // Bind repository
