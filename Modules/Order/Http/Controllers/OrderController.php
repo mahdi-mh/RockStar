@@ -3,7 +3,6 @@
 namespace Modules\Order\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,8 +11,10 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use JsonException;
 use Modules\Order\Enums\OrderConsumeLocation;
+use Modules\Order\Enums\OrderStatus;
 use Modules\Order\Models\Order;
 use Modules\Order\Resources\OrderCollectionResource;
+use Modules\Order\Resources\OrderJsonResource;
 use Modules\Product\Models\Product;
 use Throwable;
 use Validator;
@@ -40,9 +41,9 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      * @param Request $request
-     * @return Order
+     * @return OrderJsonResource
      */
-    public function store(Request $request): Order
+    public function store(Request $request): OrderJsonResource
     {
         $validatedData = Validator::validate($request->all(), [
             'consume_location' => ['required', 'string', new Enum(OrderConsumeLocation::class)],
@@ -54,7 +55,7 @@ class OrderController extends Controller
         $request->user()
             ->order()->save($order);
 
-        return $order;
+        return new OrderJsonResource($order);
     }
 
     /**
@@ -84,51 +85,34 @@ class OrderController extends Controller
         $order->calculateTotalPrice();
 
         return response()->json([
-            'message' => 'Product added to order successfully',
-            'order' => $order->refresh(),
-            'products' => $order->products ?? null,
+            'message' => 'Product added to order successfully.',
+            'data' => new OrderJsonResource($order),
         ]);
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
+    public function deleteProduct(Request $request, Order $order)
     {
-        return view('order::show');
+        $validatedData = Validator::validate($request->all(), [
+            'product_id' => ['required', 'integer', Rule::exists('products', 'id')],
+        ]);
+
+        $order->products()
+            ->detach($validatedData['product_id']);
+
+        return response()->json([
+            'message' => 'Product successfully deleted from this order.',
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
+    public function getOrder(Order $order)
     {
-        return view('order::edit');
-    }
+        $order->updateOrFail([
+            'status' => OrderStatus::PREPARATION->value,
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
+        return response()->json([
+            'message' => 'Product successfully submitted , please wait for preparing.',
+        ]);
     }
 
     /**

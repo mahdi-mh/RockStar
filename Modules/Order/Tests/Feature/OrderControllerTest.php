@@ -109,8 +109,11 @@ class OrderControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_CREATED);
         $response->assertJsonStructure([
-            'id',
-            'consume_location'
+            'data' => [
+                'id',
+                'status',
+                'consume_location'
+            ]
         ]);
     }
 
@@ -171,9 +174,11 @@ class OrderControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_CREATED);
         $response->assertJsonStructure([
-            'id',
-            'consume_location',
-            'address',
+            'data' => [
+                'id',
+                'status',
+                'consume_location'
+            ]
         ]);
     }
 
