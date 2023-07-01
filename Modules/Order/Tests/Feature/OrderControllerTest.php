@@ -227,4 +227,66 @@ class OrderControllerTest extends TestCase
         $response->assertNotAcceptable();
         $response->assertJson(["message" => 'This order status not allow for this action']);
     }
+
+    public function test_order_add_product_successfully()
+    {
+        $this->seed([
+            ProductSeeder::class,
+            OrderDatabaseSeeder::class,
+        ]);
+
+        $user = User::firstOrFail();
+        $this->actingAs($user);
+
+        $order = $user->order()->first();
+        $order->update(['status' => OrderStatus::ORDERING->value]);
+
+        $response = $this->postJson("/api/order/{$order->id}/add-product", [
+            'product_id' => 1,
+            'details' => '[{"id":1,"value":"skim"}]'
+        ]);
+
+        $response->assertSuccessful();
+        $response->assertJson(["message" => "Product added to order successfully."]);
+    }
+
+    public function test_delete_product_successfully()
+    {
+        $this->seed([
+            ProductSeeder::class,
+            OrderDatabaseSeeder::class,
+        ]);
+
+        $user = User::firstOrFail();
+        $this->actingAs($user);
+
+        $order = $user->order()->first();
+        $order->update(['status' => OrderStatus::ORDERING->value]);
+
+        $response = $this->putJson("/api/order/{$order->id}/delete-product", [
+            'product_id' => $order->products()->first()->id,
+        ]);
+
+        $response->assertSuccessful();
+        $response->assertJson(["message" => "Product successfully deleted from this order."]);
+    }
+
+    public function test_prepare_order_successfully()
+    {
+        $this->seed([
+            ProductSeeder::class,
+            OrderDatabaseSeeder::class,
+        ]);
+
+        $user = User::firstOrFail();
+        $this->actingAs($user);
+
+        $order = $user->order()->first();
+        $order->update(['status' => OrderStatus::ORDERING->value]);
+
+        $response = $this->getJson("/api/order/{$order->id}/prepare");
+
+        $response->assertSuccessful();
+        $response->assertJson(["message" => "Product successfully submitted , please wait for preparing."]);
+    }
 }

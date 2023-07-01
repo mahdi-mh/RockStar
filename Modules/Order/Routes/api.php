@@ -30,4 +30,9 @@ Route::middleware([
 Route::middleware([
     "checkOrderCreatedByAuthUser",
     "checkOrderStatus:" . OrderStatus::ORDERING->value,
+])->put('{order}/delete-product', [OrderController::class, 'deleteProduct']);
+
+Route::middleware([
+    "checkOrderCreatedByAuthUser",
+    "checkOrderStatus:" . OrderStatus::ORDERING->value,
 ])->get('{order}/prepare', [OrderController::class, 'prepareOrder']);
