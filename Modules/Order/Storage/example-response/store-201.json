@@ -1,0 +1,10 @@
+{
+    "data": {
+        "id": 11,
+        "status": "ordering",
+        "consume_location": "in_shop",
+        "address": null,
+        "total_price": null,
+        "products": []
+    }
+}

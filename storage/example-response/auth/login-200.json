@@ -1,0 +1,11 @@
+{
+    "user": {
+        "id": 11,
+        "name": "mahdi",
+        "email": "test@test.com",
+        "email_verified_at": null,
+        "created_at": "2023-06-26T19:32:24.000000Z",
+        "updated_at": "2023-06-26T19:32:24.000000Z"
+    },
+    "token": "2|GVE7YkBdvq80enCb87Z2LlHXGYrf8s37ZhQA6eim"
+}

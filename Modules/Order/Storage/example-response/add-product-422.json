@@ -1,0 +1,8 @@
+{
+    "message": "The selected product id is invalid.",
+    "errors": {
+        "product_id": [
+            "The selected product id is invalid."
+        ]
+    }
+}

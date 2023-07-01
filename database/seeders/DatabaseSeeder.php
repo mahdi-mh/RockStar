@@ -2,8 +2,11 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\Order\Database\Seeders\OrderDatabaseSeeder;
+use Modules\Product\Database\Seeders\ProductDetailSeeder;
+use Modules\Product\Database\Seeders\ProductSeeder;
+use Modules\Product\Database\Seeders\ProductSyncWithDetailSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,11 +15,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $this->call([
+            UserSeeder::class,
+            ProductSeeder::class,
+            ProductDetailSeeder::class,
+            ProductSyncWithDetailSeeder::class,
+            OrderDatabaseSeeder::class,
+        ]);
     }
 }
