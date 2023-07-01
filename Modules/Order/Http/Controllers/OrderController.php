@@ -130,9 +130,9 @@ class OrderController extends Controller
     }
 
     /**
-     * Add product
+     * Delete product
      *
-     * Add a product to order.
+     * Delete a product from order.
      *
      * @param Request $request
      * @param Order $order
@@ -162,7 +162,23 @@ class OrderController extends Controller
         ]);
     }
 
-    public function getOrder(Order $order)
+    /**
+     * Prepare
+     *
+     * Request to prepare this order
+     *
+     * @param Order $order
+     * @return JsonResponse
+     * @throws Throwable
+     *
+     * @group Order
+     *
+     * @responseFile status=200 scenario="Successfully submitted" Modules/Order/Storage/example-response/prepare-200.json
+     * @responseFile status=403 scenario="Permission denied" Modules/Order/Storage/example-response/add-product-403.json
+     * @responseFile status=406 scenario="When order status is not ordering" Modules/Order/Storage/example-response/add-product-406.json
+     * @responseFile status=401 scenario="Unauthenticated" storage/example-response/auth/unauth-401.json
+     */
+    public function prepareOrder(Order $order)
     {
         $order->updateOrFail([
             'status' => OrderStatus::PREPARATION->value,
